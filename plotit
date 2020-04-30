@@ -18,8 +18,9 @@ def plot_file(filename):
     NAME TIMESTAMP FLOAT_VALUE
     """
     series = read_csv(filename, delimiter=' ', header=None, index_col=1, parse_dates=True, date_parser=unix2datetime)
-    series.plot()
-    pyplot.show()
+    # TODO: Expose --kind option that only allows: line|bar|area
+    series.plot(title=filename, kind="line")
+    pyplot.savefig(filename + ".png")
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
