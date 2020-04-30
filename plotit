@@ -28,19 +28,26 @@ def plot_file(filename):
     Plot a CSV file using a space as delimiter with the format:
     NAME TIMESTAMP FLOAT_VALUE
     """
-    # TODO: Catch exceptions on invalid files
-    series = read_csv(
-        filename,
-        delimiter=args.delimiter,
-        header=None,
-        index_col=1,
-        parse_dates=True,
-        date_parser=unix2datetime)
-    series.plot(
-        title=os.path.basename(filename),
-        kind=args.kind)
-    pyplot.savefig(filename + ".png")
+    try:
+        series = read_csv(
+            filename,
+            delimiter=args.delimiter,
+            header=None,
+            index_col=1,
+            parse_dates=True,
+            date_parser=unix2datetime)
+        series.plot(
+            title=os.path.basename(filename),
+            kind=args.kind)
+    except (OSError, ValueError, TypeError) as err:
+        print("ERROR: %s: %s" % (err, filename), file=sys.stderr)
+        sys.exit(1)
 
+    try:
+        pyplot.savefig(filename + ".png")
+    except OSError as err:
+        print("ERROR: %s: %s" % (err, filename), file=sys.stderr)
+        sys.exit(1)
 
 def parse_args():
     """
