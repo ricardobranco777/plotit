@@ -14,7 +14,7 @@ def unix2datetime(timestamp):
 
 def plot_file(filename):
     """
-    Plot filename (a CSV file using a space as delimiter with the format:
+    Plot a CSV file using a space as delimiter with the format:
     NAME TIMESTAMP FLOAT_VALUE
     """
     series = read_csv(filename, delimiter=' ', header=None, index_col=1, parse_dates=True, date_parser=unix2datetime)
