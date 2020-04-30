@@ -1,10 +1,18 @@
 #!/usr/bin/python3
+"""
+PlotIt
+"""
 
+import argparse
 import sys
 from datetime import datetime
 
 from pandas import read_csv
 from matplotlib import pyplot
+
+USAGE = "%s [-k|--kind line|bar|area] FILES..." % sys.argv[0]
+args = None
+
 
 def unix2datetime(timestamp):
     """
@@ -12,18 +20,47 @@ def unix2datetime(timestamp):
     """
     return datetime.fromtimestamp(int(timestamp))
 
+
 def plot_file(filename):
     """
     Plot a CSV file using a space as delimiter with the format:
     NAME TIMESTAMP FLOAT_VALUE
     """
-    series = read_csv(filename, delimiter=' ', header=None, index_col=1, parse_dates=True, date_parser=unix2datetime)
-    # TODO: Expose --kind option that only allows: line|bar|area
-    series.plot(title=filename, kind="line")
+    # TODO: Catch exceptions on invalid files
+    series = read_csv(
+        filename,
+        delimiter=' ',
+        header=None,
+        index_col=1,
+        parse_dates=True,
+        date_parser=unix2datetime)
+    series.plot(title=filename, kind=args.kind)
     pyplot.savefig(filename + ".png")
 
-if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print("USAGE: %s FILENAME\n", file=sys.stderr)
+
+def parse_args():
+    """
+    Parse options and arguments
+    """
+    parser = argparse.ArgumentParser(usage=USAGE, add_help=False)
+    parser.add_argument(
+        '-k', '--kind', default='line', choices=['line', 'bar', 'area'])
+    parser.add_argument('files', nargs='+')
+    return parser.parse_args()
+
+
+def main():
+    """
+    Main function
+    """
+    global args  # pylint: disable=global-statement
+    args = parse_args()
+    for file in args.files:
+        plot_file(file)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
         sys.exit(1)
-    plot_file(sys.argv[1])
