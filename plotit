@@ -4,6 +4,7 @@ PlotIt
 """
 
 import argparse
+import os
 import sys
 from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
@@ -35,7 +36,7 @@ def plot_file(filename):
         index_col=1,
         parse_dates=True,
         date_parser=unix2datetime)
-    series.plot(title=filename, kind=args.kind)
+    series.plot(title=os.path.basename(filename), kind=args.kind)
     pyplot.savefig(filename + ".png")
 
 
