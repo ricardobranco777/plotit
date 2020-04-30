@@ -18,7 +18,7 @@ Note: The type of graph may be specified with the `-k` (`--kind`) option.  The d
 
 ## Dependencies
 
-The *python3-pandas* package will install these on Debian/Ubuntu & openSUSE:
+The **python3-pandas** package will install these on Debian/Ubuntu & openSUSE:
 
 - Matplotlib
 - Pandas
