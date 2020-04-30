@@ -5,6 +5,7 @@ PlotIt
 
 import argparse
 import sys
+from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
 
 from pandas import read_csv
@@ -57,8 +58,8 @@ def main():
     """
     global args  # pylint: disable=global-statement
     args = parse_args()
-    for file in args.files:
-        plot_file(file)
+    with ProcessPoolExecutor() as executor:
+        executor.map(plot_file, args.files)
 
 
 if __name__ == "__main__":
