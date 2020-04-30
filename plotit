@@ -10,7 +10,7 @@ from datetime import datetime
 from pandas import read_csv
 from matplotlib import pyplot
 
-USAGE = "%s [-k|--kind line|bar|area] FILES..." % sys.argv[0]
+USAGE = "%s [-d|--delimiter DELIMITER] [-k|--kind line|bar|area] FILES..." % sys.argv[0]
 args = None
 
 
@@ -29,7 +29,7 @@ def plot_file(filename):
     # TODO: Catch exceptions on invalid files
     series = read_csv(
         filename,
-        delimiter=' ',
+        delimiter=args.delimiter,
         header=None,
         index_col=1,
         parse_dates=True,
@@ -43,6 +43,8 @@ def parse_args():
     Parse options and arguments
     """
     parser = argparse.ArgumentParser(usage=USAGE, add_help=False)
+    parser.add_argument(
+        '-d', '--delimiter', default=' ')
     parser.add_argument(
         '-k', '--kind', default='line', choices=['line', 'bar', 'area'])
     parser.add_argument('files', nargs='+')
