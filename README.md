@@ -10,7 +10,7 @@ Cool plotting tool that generates a PNG graph for each CSV file (with space as d
 
 `plotit [-k|--kind line|bar|area] FILENAME...`
 
-Note: The type of graph may be specified with the `-k` (`--kind`) option.
+Note: The type of graph may be specified with the `-k` (`--kind`) option.  The default is `line`.
 
 ## Example
 
