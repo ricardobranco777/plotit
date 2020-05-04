@@ -13,7 +13,8 @@ from pandas import read_csv
 from matplotlib import pyplot
 
 USAGE = '''%s [-s|--separator FIELD_SEPARATOR] [-k|--kind line|bar|area]
-   [-o|--output OUTPUT] [-d|--dir DIRECTORY] FILES...''' % sys.argv[0]
+   [-o|--output OUTPUT] [-d|--dir DIRECTORY]
+   [-t|--type png|svg|pdf] FILES...''' % sys.argv[0]
 args = None
 
 
@@ -47,7 +48,7 @@ def plot_file(filename, outfile=None):
     filename = outfile if outfile else filename
 
     try:
-        pyplot.savefig(filename + ".png")
+        pyplot.savefig(filename + "." + args.type)
     except OSError as err:
         print("ERROR: %s: %s" % (err, filename), file=sys.stderr)
         sys.exit(1)
@@ -63,6 +64,8 @@ def parse_args():
         '-o', '--output')
     parser.add_argument(
         '-s', '--separator', default=' ')
+    parser.add_argument(
+        '-t', '--type', default='png', choices=['png', 'svg', 'pdf'])
     parser.add_argument(
         '-k', '--kind', default='line', choices=['line', 'bar', 'area'])
     parser.add_argument('files', nargs='+')
