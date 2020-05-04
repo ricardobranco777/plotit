@@ -12,7 +12,8 @@ from datetime import datetime
 from pandas import read_csv
 from matplotlib import pyplot
 
-USAGE = "%s [-d|--delimiter DELIMITER] [-k|--kind line|bar|area] FILES..." % sys.argv[0]
+USAGE = '''%s [-s|--separator FIELD_SEPARATOR] [-k|--kind line|bar|area]
+   [-o|--output OUTPUT] [-d|--dir DIRECTORY] FILES...''' % sys.argv[0]
 args = None
 
 
@@ -23,7 +24,7 @@ def unix2datetime(timestamp):
     return datetime.fromtimestamp(int(timestamp))
 
 
-def plot_file(filename):
+def plot_file(filename, outfile=None):
     """
     Plot a CSV file using a space as delimiter with the format:
     NAME TIMESTAMP FLOAT_VALUE
@@ -31,7 +32,7 @@ def plot_file(filename):
     try:
         series = read_csv(
             filename,
-            delimiter=args.delimiter,
+            delimiter=args.separator,
             header=None,
             index_col=1,
             parse_dates=True,
@@ -42,6 +43,8 @@ def plot_file(filename):
     except (OSError, ValueError, TypeError) as err:
         print("ERROR: %s: %s" % (err, filename), file=sys.stderr)
         sys.exit(1)
+
+    filename = outfile if outfile else filename
 
     try:
         pyplot.savefig(filename + ".png")
@@ -55,7 +58,11 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(usage=USAGE, add_help=False)
     parser.add_argument(
-        '-d', '--delimiter', default=' ')
+        '-d', '--dir')
+    parser.add_argument(
+        '-o', '--output')
+    parser.add_argument(
+        '-s', '--separator', default=' ')
     parser.add_argument(
         '-k', '--kind', default='line', choices=['line', 'bar', 'area'])
     parser.add_argument('files', nargs='+')
@@ -68,8 +75,20 @@ def main():
     """
     global args  # pylint: disable=global-statement
     args = parse_args()
-    with ProcessPoolExecutor() as executor:
-        executor.map(plot_file, args.files)
+    if args.output:
+        if len(args.files) == 1:
+            plot_file(args.files[0], args.output)
+        else:
+            print("Error: Too many plots for a single output file name.")
+    elif args.dir:
+        out_files = [
+            os.path.join(args.dir, os.path.basename(f)) for f in args.files
+        ]
+        with ProcessPoolExecutor() as executor:
+            executor.map(plot_file, args.files, out_files)
+    else:
+        with ProcessPoolExecutor() as executor:
+            executor.map(plot_file, args.files)
 
 
 if __name__ == "__main__":
