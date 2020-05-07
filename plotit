@@ -82,7 +82,8 @@ def main():
         if len(args.files) == 1:
             plot_file(args.files[0], args.output)
         else:
-            print("Error: Too many plots for a single output file name.")
+            print("ERROR: Too many plots for a single output file name", file=sys.stderr)
+            sys.exit(1)
     elif args.dir:
         out_files = [
             os.path.join(args.dir, os.path.basename(f)) for f in args.files
