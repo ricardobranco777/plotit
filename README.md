@@ -2,6 +2,8 @@
 
 Cool plotting tool that generates a PNG graph for each CSV file (with space as delimiter).
 
+[![Build Status](https://travis-ci.org/ricardobranco777/plotit.svg?branch=master)](https://travis-ci.org/ricardobranco777/plotit)
+
 ## Format of each line
 
 `PLOT_NAME SECONDS_SINCE_EPOCH FLOAT_VALUE`

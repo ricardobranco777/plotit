@@ -15,7 +15,6 @@ from matplotlib import pyplot
 USAGE = '''%s [-s|--separator FIELD_SEPARATOR] [-k|--kind line|bar|area]
    [-o|--output OUTPUT] [-d|--dir DIRECTORY]
    [-t|--type png|svg|pdf] FILES...''' % sys.argv[0]
-args = None
 
 
 def unix2datetime(timestamp):
@@ -33,14 +32,14 @@ def plot_file(filename, outfile=None):
     try:
         series = read_csv(
             filename,
-            delimiter=args.separator,
+            delimiter=opts.separator,
             header=None,
             index_col=1,
             parse_dates=True,
             date_parser=unix2datetime)
         series.plot(
             title=os.path.basename(filename),
-            kind=args.kind)
+            kind=opts.kind)
     except (OSError, ValueError, TypeError) as err:
         print("ERROR: %s: %s" % (err, filename), file=sys.stderr)
         sys.exit(1)
@@ -48,10 +47,11 @@ def plot_file(filename, outfile=None):
     filename = outfile if outfile else filename
 
     try:
-        pyplot.savefig(filename + "." + args.type)
+        pyplot.savefig(filename + "." + opts.type)
     except OSError as err:
         print("ERROR: %s: %s" % (err, filename), file=sys.stderr)
         sys.exit(1)
+
 
 def parse_args():
     """
@@ -76,26 +76,25 @@ def main():
     """
     Main function
     """
-    global args  # pylint: disable=global-statement
-    args = parse_args()
-    if args.output:
-        if len(args.files) == 1:
-            plot_file(args.files[0], args.output)
+    if opts.output:
+        if len(opts.files) == 1:
+            plot_file(opts.files[0], opts.output)
         else:
-            print("ERROR: Too many plots for a single output file name", file=sys.stderr)
+            print("ERROR: Too many plots for a single output file", file=sys.stderr)
             sys.exit(1)
-    elif args.dir:
+    elif opts.dir:
         out_files = [
-            os.path.join(args.dir, os.path.basename(f)) for f in args.files
+            os.path.join(opts.dir, os.path.basename(f)) for f in opts.files
         ]
         with ProcessPoolExecutor() as executor:
-            executor.map(plot_file, args.files, out_files)
+            executor.map(plot_file, opts.files, out_files)
     else:
         with ProcessPoolExecutor() as executor:
-            executor.map(plot_file, args.files)
+            executor.map(plot_file, opts.files)
 
 
 if __name__ == "__main__":
+    opts = parse_args()
     try:
         main()
     except KeyboardInterrupt:
