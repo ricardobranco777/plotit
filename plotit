@@ -12,9 +12,9 @@ from datetime import datetime
 from pandas import read_csv
 from matplotlib import pyplot
 
-USAGE = '''%s [-s|--separator FIELD_SEPARATOR] [-k|--kind line|bar|area]
+USAGE = f'''{sys.argv[0]} [-s|--separator FIELD_SEPARATOR] [-k|--kind line|bar|area]
    [-o|--output OUTPUT] [-d|--dir DIRECTORY]
-   [-t|--type png|svg|pdf] FILES...''' % sys.argv[0]
+   [-t|--type png|svg|pdf] FILES...'''
 
 
 def unix2datetime(timestamp):
@@ -41,7 +41,7 @@ def plot_file(filename, outfile=None):
             title=os.path.basename(filename),
             kind=opts.kind)
     except (OSError, ValueError, TypeError) as err:
-        print("ERROR: %s: %s" % (err, filename), file=sys.stderr)
+        print(f"ERROR: {err}: {filename}", file=sys.stderr)
         sys.exit(1)
 
     filename = outfile if outfile else filename
@@ -49,7 +49,7 @@ def plot_file(filename, outfile=None):
     try:
         pyplot.savefig(filename + "." + opts.type)
     except OSError as err:
-        print("ERROR: %s: %s" % (err, filename), file=sys.stderr)
+        print(f"ERROR: {err}: {filename}", file=sys.stderr)
         sys.exit(1)
 
 
